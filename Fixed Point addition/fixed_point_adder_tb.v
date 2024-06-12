@@ -1,23 +1,22 @@
 `timescale 1 ns / 10 ps
 module adder_fp_tb;
 
-localparam W_in = 16;
-localparam W_in_F = 14;
-localparam W_out = 16;
-localparam W_out_F = 14;
+localparam W_len = 16;
+localparam W_fract = 14;
+
 
 
 reg clk;
 reg reset;
-reg signed [W_in-1:0] a;
-reg signed [W_in-1:0] b;
+reg signed [W_len-1:0] a;
+reg signed [W_len-1:0] b;
 
 
 wire signed [W_out-1:0] sum;
 wire overflow;
 wire underflow;
 
-fp_adder #(.W_in(W_in), .W_in_F(W_in_F), .W_out(W_out), .W_out_F(W_out_F)) 
+fp_adder #(.W_len(W_len), .W_fract(W_fract)) 
 adder_dut (.a(a), .b(b), .clk(clk),.reset(reset), .sum(sum), .overflow(overflow), .underflow(underflow));
 
 initial begin
@@ -31,7 +30,7 @@ initial begin
     #10 a=16'h2000 ; b = 16'h9000 ;    // a = 0.5  b = -1.75
 
     #10 a=16'h9000 ; b = 16'hd000 ;   // a = -1.75  b = -0.75
-
+`
     #10 a=16'h5555 ; b = 16'h2000 ;   // a = 1.33331298828125  b = 0.5
 
     #10 a=16'h5555 ; b = 16'h4000 ;  // a = 1.33331298828125  b = 1

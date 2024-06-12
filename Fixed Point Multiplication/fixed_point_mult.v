@@ -1,36 +1,51 @@
 module fp_mult #(
-    parameter W_in =16 , //!Word length of inputs
-    parameter W_in_F = 14, //! Length of fractional part of input
-    parameter W_out =16 ,  //!Word length of outputs
-    parameter W_out_F = 14 //! Length of fractional part of output
+    parameter W_len =16 , //!Word length of inputs
+    parameter W_fract = 14 //! Length of fractional part of input
 ) (
-    input signed [W_in-1:0] a,
-    input signed [W_in-1:0] b,
-    output signed [W_out-1:0] PRODUCT,
-    output reg OVERFLOW, //!Shows whether overflow have occured or not
-    output reg UNDERFLOW //!Shows whether underflow have occured or not
+    input clk,
+    input reset,
+    input signed [W_len-1:0] a,
+    input signed [W_len-1:0] b,
+    output reg signed [W_len-1:0] product,
+    output reg overflow, //!Shows whether overflow have occured or not
+    output reg underflow //!Shows whether underflow have occured or not
 );
 
-reg signed [2*W_in-1:0] PRODUCT_i;
+wire signed [2*W_len-1:0] product_i;
 
-always @(*) begin
-    PRODUCT_i = a*b;
-    if (PRODUCT_i > 32'sh1FFFC000 ) begin
-        OVERFLOW = 1;
-        UNDERFLOW = 0;
+assign product_i = a*b;
+
+always @(posedge clk or posedge reset) begin
+    if (reset) begin
+        product <= 0;
+        overflow <= 0;
+        underflow <= 0;
     end
     else begin
-        if (PRODUCT_i < 32'shE0000000 )begin
-            OVERFLOW = 0;
-            UNDERFLOW = 1;
-        end
-        else begin
-            OVERFLOW = 0;
-            UNDERFLOW = 0;
-        end
-    end    
-end
+        product <= product_i[W_len+W_fract-1:W_fract];
 
-assign PRODUCT = PRODUCT_i[W_out+W_out_F-1:W_out_F];
+        if (a[W_len-1] != b[W_len-1] ) begin
+            if (product_i[(2*W_len-1)-(W_len-W_fract)] == 0) begin
+                overflow <= 0;
+                underflow <= 1;
+            end 
+            else begin
+                overflow <= 0;
+                underflow <= 0;                
+            end
+        end
+
+        else begin
+            if (product_i[(2*W_len-1)-(W_len-W_fract)] == 1) begin
+                overflow <= 1;
+                underflow <= 0;
+            end 
+            else begin
+                overflow <= 0;
+                underflow <= 0;   
+            end
+        end
+    end
+end
 
 endmodule

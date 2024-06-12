@@ -5,7 +5,6 @@ localparam W_len = 16;
 localparam W_fract = 14;
 
 
-
 reg clk;
 reg reset;
 reg signed [W_len-1:0] a;

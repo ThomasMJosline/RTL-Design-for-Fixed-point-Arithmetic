@@ -36,7 +36,7 @@ always @(posedge clk or posedge reset) begin
         end
 
         else begin
-            if (product_i[(2*W_len-1)-(W_len-W_fract)] == 1) begin
+            if ((product_i[(2*W_len-1)-(W_len-W_fract)] == 1 || product_i[(2*W_len-1)-(W_len-W_fract)+1] == 1)) begin
                 overflow <= 1;
                 underflow <= 0;
             end 

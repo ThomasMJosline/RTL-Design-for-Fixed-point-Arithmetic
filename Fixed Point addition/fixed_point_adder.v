@@ -1,6 +1,6 @@
 module fp_adder #(
     parameter W_len =16 ,  //!Word length 
-    parameter W_fract= 14, //! Length of fractional part 
+    parameter W_fract= 14 //! Length of fractional part 
 ) (
     input clk,
     input reset,
